@@ -1,15 +1,35 @@
 <html>
     <head>
         <title>Lies Counter</title>
+        <style>
+            .bar {
+                color: white;
+                text-align: center;
+            }
+        </style>
     </head>
     <body>
         <div>
-            <h1><a href="/">My aiohttp server</a></h1>
+            <h1>Lies Counter</h1>
         </div>
 
         <div>
-            <p>EBJ: {{ ebj }}</p>
-            <p>RGF: {{ rgf }}</p>
+            <table width="100%">
+                <col width="10%"/>
+                <col width="90%"/>
+                <tr>
+                    <th>EBJ</th>
+                    <td>
+                        <div class="bar" style="background: #f00; width: {{ ebj_ratio }}%">{{ ebj }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>RGF</th>
+                    <td>
+                        <div class="bar" style="background: #00f; width: {{ rgf_ratio }}%">{{ rgf }}</div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>
