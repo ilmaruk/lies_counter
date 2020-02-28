@@ -1,0 +1,14 @@
+version: "3.4"
+
+services:
+  lies-counter:
+    build:
+      context: .
+      dockerfile: _docker/Dockerfile
+    expose:
+      - "8080"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:5.0.7
