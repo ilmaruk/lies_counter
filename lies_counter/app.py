@@ -1,23 +1,32 @@
+import os
+
+import aiohttp_jinja2
 import aioredis
+import jinja2
 from aiohttp import web
 
 
 async def home(request):
-    name = request.match_info.get('name', "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
+    context = {
+        "ebj": 2,
+        "rgf": 2,
+    }
+    response = aiohttp_jinja2.render_template("index.html", request,
+                                              context=context)
+
+    return response
 
 
 async def increment(request):
-    name = request.match_info.get('name', "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
+    user_id = request.match_info.get('name', "Anonymous")
+    await request.app["db"].execute("INCR", user_id)
+    return web.Response()
 
 
-async def decrement(request):
-    name = request.match_info.get('name', "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
+async def decrement(request: web.Request):
+    user_id = request.match_info.get('name', "Anonymous")
+    await request.app["db"].execute("DECR", user_id)
+    return web.Response()
 
 
 async def connect_to_db(app):
@@ -33,6 +42,10 @@ def init():
     ])
 
     app.on_startup.append(connect_to_db)
+
+    aiohttp_jinja2.setup(
+        app, loader=jinja2.FileSystemLoader(os.path.join(os.getcwd(), "templates"))
+    )
 
     return app
 
