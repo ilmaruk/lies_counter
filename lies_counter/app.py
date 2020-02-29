@@ -12,15 +12,18 @@ async def home(request):
     ebj = await _get_score(db, "ebj")
     rgf = await _get_score(db, "rgf")
     max_val = max(ebj, rgf)
+    ebj_ratio = int(ebj / max_val * 100) if max_val > 0 else 100
+    rgf_ratio = int(rgf / max_val * 100) if max_val > 0 else 100
 
     lu = await db.get("last_updated")
+    lu = lu.decode("utf-8") if lu is not None else "never"
 
     context = {
         "ebj": ebj,
-        "ebj_ratio": int(ebj / max_val * 100),
+        "ebj_ratio": ebj_ratio,
         "rgf": rgf,
-        "rgf_ratio": int(rgf / max_val * 100),
-        "last_updated": lu.decode("utf-8"),
+        "rgf_ratio": rgf_ratio,
+        "last_updated": lu,
     }
     response = aiohttp_jinja2.render_template("index.html", request,
                                               context=context)
@@ -46,7 +49,7 @@ async def decrement(request: web.Request):
 
 async def _get_score(db, key):
     score = await db.get(key)
-    return int(score)
+    return int(score) if score is not None else 0
 
 
 async def _set_last_updated(db):
