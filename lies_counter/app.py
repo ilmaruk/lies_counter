@@ -27,13 +27,15 @@ async def home(request):
 async def increment(request):
     user_id = request.match_info.get("userid")
     await request.app["db"].execute("INCR", user_id)
-    return web.Response(text=str(await _get_score(request.app["db"], user_id)))
+    raise web.HTTPFound(location="/")
+    # return web.Response(text=str(await _get_score(request.app["db"], user_id)))
 
 
 async def decrement(request: web.Request):
     user_id = request.match_info.get("userid")
     await request.app["db"].execute("DECR", user_id)
-    return web.Response(text=str(await _get_score(request.app["db"], user_id)))
+    raise web.HTTPFound(location="/")
+    # return web.Response(text=str(await _get_score(request.app["db"], user_id)))
 
 
 async def _get_score(db, key):
