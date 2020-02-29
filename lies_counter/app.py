@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import aiohttp_jinja2
 import aioredis
@@ -12,11 +13,14 @@ async def home(request):
     rgf = await _get_score(db, "rgf")
     max_val = max(ebj, rgf)
 
+    lu = await db.get("last_updated")
+
     context = {
         "ebj": ebj,
         "ebj_ratio": int(ebj / max_val * 100),
         "rgf": rgf,
         "rgf_ratio": int(rgf / max_val * 100),
+        "last_updated": lu.decode("utf-8"),
     }
     response = aiohttp_jinja2.render_template("index.html", request,
                                               context=context)
@@ -26,21 +30,27 @@ async def home(request):
 
 async def increment(request):
     user_id = request.match_info.get("userid")
-    await request.app["db"].execute("INCR", user_id)
+    if user_id == "ebj":
+        await request.app["db"].execute("INCR", user_id)
+        await _set_last_updated(request.app["db"])
     raise web.HTTPFound(location="/")
-    # return web.Response(text=str(await _get_score(request.app["db"], user_id)))
 
 
 async def decrement(request: web.Request):
     user_id = request.match_info.get("userid")
-    await request.app["db"].execute("DECR", user_id)
+    if user_id == "rgf":
+        await request.app["db"].execute("DECR", user_id)
+        await _set_last_updated(request.app["db"])
     raise web.HTTPFound(location="/")
-    # return web.Response(text=str(await _get_score(request.app["db"], user_id)))
 
 
 async def _get_score(db, key):
     score = await db.get(key)
     return int(score)
+
+
+async def _set_last_updated(db):
+    await db.set("last_updated", str(datetime.now()))
 
 
 async def connect_to_db(app):
