@@ -5,6 +5,9 @@
             body {
                 font-family: medium-marketing-display-font, Georgia, Cambria, "Times New Roman", Times, serif;
                 }
+            form {
+                display:inline;
+            }
 
             .bargraph {
                 list-style: none;
@@ -31,6 +34,18 @@
                 width:{{ rgf_ratio }}%;
                 }
         </style>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script type="javascript">
+            $(function() {
+              $("#ebjinc").on("click",function(e) {
+                e.preventDefault(); // cancel the link itself
+                alert("ok");
+<!--                $.post(this.href,function(data) {-->
+<!--                  $("#someContainer").html(data);-->
+<!--                });-->
+              });
+            });
+        </script>
     </head>
     <body>
         <div align="center">
@@ -40,8 +55,16 @@
 
         <div>
             <ul class="bargraph">
-                <li class="ebj">EBJ ({{ ebj }})</li>
-                <li class="rgf">RGF ({{ rgf }})</li>
+                <li class="ebj">
+                    <form action="/inc/ebj" method="post"><button type="submit" id="ebjinc">+</button></form>
+                    <form action="/dec/ebj" method="post"><button type="submit" id="ebjdec">-</button></form>
+                    EBJ ({{ ebj }})
+                </li>
+                <li class="rgf">
+                    <form action="/inc/rgf" method="post"><button type="submit" id="rgfinc">+</button></form>
+                    <form action="/dec/rgf" method="post"><button type="submit" id="rgfdec">-</button></form>
+                    RGF ({{ rgf }})
+                </li>
             </ul>
         </div>
     </body>
