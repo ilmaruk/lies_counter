@@ -2,43 +2,50 @@
     <head>
         <title>Lies Counter</title>
         <style>
-            .bar {
+            h1 {
+                font-family: medium-marketing-display-font, Georgia, Cambria, "Times New Roman", Times, serif;
+                }
+            h2 {
+                font-family: medium-marketing-display-font, Georgia, Cambria, "Times New Roman", Times, serif;
+                }
+
+            .bargraph {
+                list-style: none;
+                padding-top: 20px;
+                width:90%;
+                }
+            ul.bargraph li {
+                height: 35px;
                 color: white;
-                text-align: center;
-            }
+                text-align: left;
+                font-style: italic;
+                font-weight:bolder;
+                font-size: 14px;
+                line-height: 35px;
+                padding: 0px 20px;
+                margin-bottom: 5px;
+                }
+            ul.bargraph li.ebj {
+                background: #FF1493;
+                width:{{ ebj_ratio }}%;
+                }
+            ul.bargraph li.rgf {
+                background: #000080;
+                width:{{ rgf_ratio }}%;
+                }
         </style>
     </head>
     <body>
-        <div>
+        <div align="center">
             <h1>Lies Counter</h1>
+            <h2>Last update: {{ last_update }}</h2>
         </div>
 
         <div>
-            <table width="100%">
-                <col width="10%"/>
-                <col width="10%"/>
-                <col width="80%"/>
-                <tr>
-                    <th>EBJ</th>
-                    <th>
-                        <form action="/inc/ebj" method="post"><button type="submit"> + </button></form>
-                        <form action="/dec/ebj" method="post"><button type="submit"> - </button></form>
-                    </th>
-                    <td>
-                        <div class="bar" style="background: #f00; width: {{ ebj_ratio }}%">{{ ebj }}</div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>RGF</th>
-                    <th>
-                        <form action="/inc/rgf" method="post"><button type="submit"> + </button></form>
-                        <form action="/dec/rgf" method="post"><button type="submit"> - </button></form>
-                    </th>
-                    <td>
-                        <div class="bar" style="background: #00f; width: {{ rgf_ratio }}%">{{ rgf }}</div>
-                    </td>
-                </tr>
-            </table>
+            <ul class="bargraph">
+                <li class="ebj">EBJ ({{ ebj }})</li>
+                <li class="rgf">RGF ({{ rgf }})</li>
+            </ul>
         </div>
     </body>
 </html>
