@@ -7,8 +7,7 @@ import jinja2
 from aiohttp import web
 
 
-async def home(request):
-    db = request.app["db"]
+async def _get_context(db):
     ebj = await _get_score(db, "ebj")
     rgf = await _get_score(db, "rgf")
     max_val = max(ebj, rgf)
@@ -18,17 +17,18 @@ async def home(request):
     lu = await db.get("last_updated")
     lu = lu.decode("utf-8") if lu is not None else "never"
 
-    context = {
+    return {
         "ebj": ebj,
         "ebj_ratio": ebj_ratio,
         "rgf": rgf,
         "rgf_ratio": rgf_ratio,
         "last_updated": lu,
     }
-    response = aiohttp_jinja2.render_template("index.html", request,
-                                              context=context)
 
-    return response
+
+async def home(request):
+    context = await _get_context(request.app["db"])
+    return aiohttp_jinja2.render_template("index.html", request, context=context)
 
 
 async def increment(request):

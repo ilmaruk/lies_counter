@@ -1,59 +1,84 @@
 <html>
-    <head>
-        <title>Lies Counter</title>
-        <style>
-            body {
-                font-family: medium-marketing-display-font, Georgia, Cambria, "Times New Roman", Times, serif;
-                }
-            form {
-                display:inline;
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+<script>
+var myChart = new Chart(ctx, {...});
+</script>
+<style>
+body {
+    font-family: medium-marketing-display-font, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+button {
+    border: none;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    border-radius: 5px;
+}
+form {
+    display:inline;
+}
+.red {
+    background-color: #c00000;
+}
+.green {
+    background-color: #00c000;
+}
+</style>
+</head>
+
+<body>
+
+<div align="center">
+    <h1>Lies Counter</h1>
+    <h2>Last updated: {{ last_updated }}</h2>
+</div>
+
+<canvas id="myChart" width="400" height="100"></canvas>
+<script>
+var ctx = document.getElementById('myChart');
+var myChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+        labels: ['EBJ', 'RGF'],
+        datasets: [
+            {
+                label: 'Confirmed Lies',
+                data: [{{ ebj }}, {{ rgf }}],
+                barThickness: 50,
+                backgroundColor: [
+                    'rgba(255, 20, 147, 0.5)',
+                    'rgba(0, 0, 192, 0.7)',
+                ],
+                borderColor: [
+                    'rgba(255, 20, 147, 0.5)',
+                    'rgba(0, 0, 192, 0.7)',
+                ],
+                borderWidth: 1
             }
+        ]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
 
-            .bargraph {
-                list-style: none;
-                padding-top: 20px;
-                width:90%;
-                }
-            ul.bargraph li {
-                height: 35px;
-                color: white;
-                text-align: left;
-                font-style: italic;
-                font-weight:bolder;
-                font-size: 14px;
-                line-height: 35px;
-                padding: 0px 20px;
-                margin-bottom: 5px;
-                }
-            ul.bargraph li.ebj {
-                background: #FF1493;
-                width:{{ ebj_ratio }}%;
-                }
-            ul.bargraph li.rgf {
-                background: #000080;
-                width:{{ rgf_ratio }}%;
-                }
-        </style>
-    </head>
-    <body>
-        <div align="center">
-            <h1>Lies Counter</h1>
-            <h2>Last updated: {{ last_updated }}</h2>
-        </div>
-
-        <div>
-            <ul class="bargraph">
-                <li class="ebj">
-                    <form action="/inc/ebj" method="post"><button type="submit" id="ebjinc">+</button></form>
-                    <form action="/dec/ebj" method="post"><button type="submit" id="ebjdec">-</button></form>
-                    EBJ ({{ ebj }})
-                </li>
-                <li class="rgf">
-                    <form action="/inc/rgf" method="post"><button type="submit" id="rgfinc">+</button></form>
-                    <form action="/dec/rgf" method="post"><button type="submit" id="rgfdec">-</button></form>
-                    RGF ({{ rgf }})
-                </li>
-            </ul>
-        </div>
-    </body>
+<div align="center">
+    <form action="/inc/ebj" method="post"><button type="submit" class="red">EBJ +</button></form>
+    <form action="/dec/ebj" method="post"><button type="submit" class="green">EBJ -</button></form>
+    <form action="/inc/rgf" method="post"><button type="submit" class="red">RGF +</button></form>
+    <form action="/dec/rgf" method="post"><button type="submit" class="green">RGF -</button></form>
+</div>
+</body>
 </html>
