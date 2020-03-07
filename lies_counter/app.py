@@ -33,17 +33,15 @@ async def home(request):
 
 async def increment(request):
     user_id = request.match_info.get("userid")
-    if user_id == "ebj":
-        await request.app["db"].execute("INCR", user_id)
-        await _set_last_updated(request.app["db"])
+    await request.app["db"].execute("INCR", user_id)
+    await _set_last_updated(request.app["db"])
     raise web.HTTPFound(location="/")
 
 
 async def decrement(request: web.Request):
     user_id = request.match_info.get("userid")
-    if user_id == "rgf":
-        await request.app["db"].execute("DECR", user_id)
-        await _set_last_updated(request.app["db"])
+    await request.app["db"].execute("DECR", user_id)
+    await _set_last_updated(request.app["db"])
     raise web.HTTPFound(location="/")
 
 
