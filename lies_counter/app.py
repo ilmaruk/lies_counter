@@ -52,8 +52,9 @@ async def decrement(request: web.Request):
 
 
 def _validate_user_agent(request: web.Request) -> bool:
-    ua = request.headers.get("user-agent")  # str
-    return ua.find("Linux") != -1
+    return True
+    # ua = request.headers.get("user-agent")  # str
+    # return ua.find("Linux") != -1
 
 
 async def _get_score(db, key):
