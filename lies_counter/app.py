@@ -17,12 +17,16 @@ async def _get_context(db):
     lu = await db.get("last_updated")
     lu = lu.decode("utf-8") if lu is not None else "never"
 
+    ip = await db.get("last_ip")
+    ip = ip.decode("utf-8") if ip is not None else "nowhere"
+
     return {
         "ebj": ebj,
         "ebj_ratio": ebj_ratio,
         "rgf": rgf,
         "rgf_ratio": rgf_ratio,
         "last_updated": lu,
+        "last_ip": ip,
     }
 
 
@@ -31,18 +35,25 @@ async def home(request):
     return aiohttp_jinja2.render_template("index.html", request, context=context)
 
 
-async def increment(request):
-    user_id = request.match_info.get("userid")
-    await request.app["db"].execute("INCR", user_id)
-    await _set_last_updated(request.app["db"])
+async def increment(request: web.Request):
+    if _validate_user_agent(request):
+        user_id = request.match_info.get("userid")
+        await request.app["db"].execute("INCR", user_id)
+    await _set_last(request.app["db"], request)
     raise web.HTTPFound(location="/")
 
 
 async def decrement(request: web.Request):
-    user_id = request.match_info.get("userid")
-    await request.app["db"].execute("DECR", user_id)
-    await _set_last_updated(request.app["db"])
+    if _validate_user_agent(request):
+        user_id = request.match_info.get("userid")
+        await request.app["db"].execute("DECR", user_id)
+    await _set_last(request.app["db"], request)
     raise web.HTTPFound(location="/")
+
+
+def _validate_user_agent(request: web.Request) -> bool:
+    ua = request.headers.get("user-agent")  # str
+    return ua.find("Linux") != -1
 
 
 async def _get_score(db, key):
@@ -50,8 +61,9 @@ async def _get_score(db, key):
     return int(score) if score is not None else 0
 
 
-async def _set_last_updated(db):
+async def _set_last(db, request: web.Request):
     await db.set("last_updated", str(datetime.now()))
+    await db.set("last_ip", request.remote)
 
 
 async def connect_to_db(app):
