@@ -6,6 +6,8 @@ import aioredis
 import jinja2
 from aiohttp import web
 
+_FAKE_AI = False
+
 
 async def _get_context(db):
     ebj = await _get_score(db, "ebj")
@@ -52,9 +54,10 @@ async def decrement(request: web.Request):
 
 
 def _validate_user_agent(request: web.Request) -> bool:
-    return True
-    # ua = request.headers.get("user-agent")  # str
-    # return ua.find("Linux") != -1
+    if not _FAKE_AI:
+        return True
+    ua = request.headers.get("user-agent")  # str
+    return ua.find("Linux") != -1
 
 
 async def _get_score(db, key):
@@ -64,7 +67,7 @@ async def _get_score(db, key):
 
 async def _set_last(db, request: web.Request):
     await db.set("last_updated", str(datetime.now()))
-    await db.set("last_ip", request.remote)
+    await db.set("last_ip", request.headers.get("X-Forwarded-For", "unknown"))
 
 
 async def connect_to_db(app):
